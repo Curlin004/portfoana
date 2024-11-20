@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse von Geschäftsprozessen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th, td {
+            background-color: #f9f9f9;
+        }
+        th {
+            background-color: #d9eaf5;
+        }
+        td.editable {
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        input, button {
+            margin-right: 10px;
+        }
+        .row-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Analyse von Geschäftsprozessen</h1>
+    <h3>Portfolio-Analyse: Beispiel</h3>
+    <table id="processTable">
+        <thead>
+            <tr>
+                <th class="editable" contenteditable="true">Prozesse</th>
+                <th class="editable" contenteditable="true">Verbesserungspotenzial</th>
+                <th class="editable" contenteditable="true">Prozessattraktivität</th>
+                <th class="editable" contenteditable="true">Durchführbarkeit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="editable" contenteditable="true">Prozess 1</td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="controls">
+        <button onclick="addRow()">Zeile hinzufügen</button>
+        <button onclick="addColumn()">Spalte hinzufügen</button>
+    </div>
+    <div id="rowControlsContainer"></div>
+    <script>
+        function addRow() {
+            const table = document.getElementById('processTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            const cellCount = document.getElementById('processTable').rows[0].cells.length;
+            for (let i = 0; i < cellCount; i++) {
+                const newCell = newRow.insertCell(i);
+                newCell.contentEditable = "true";
+                newCell.className = "editable";
+            }
+
+            // Add controls for the new row
+            createRowControls(newRow.rowIndex);
+        }
+
+        function addColumn() {
+            const table = document.getElementById('processTable');
+            const rows = table.rows;
+            const columnHeader = prompt("Spaltenname eingeben:", "Neue Spalte");
+            if (columnHeader) {
+                rows[0].insertCell(rows[0].cells.length).outerHTML = `<th class="editable" contenteditable="true">${columnHeader}</th>`;
+                for (let i = 1; i < rows.length; i++) {
+                    const newCell = rows[i].insertCell(rows[i].cells.length);
+                    newCell.contentEditable = "true";
+                    newCell.className = "editable";
+                }
+            }
+        }
+
+        function createRowControls(rowIndex) {
+            const rowControlsContainer = document.getElementById("rowControlsContainer");
+            const rowControls = document.createElement("div");
+            rowControls.className = "row-controls";
+            rowControls.setAttribute("data-row", rowIndex);
+
+            const label = document.createElement("label");
+            label.innerText = `Zeile ${rowIndex}: Schriftgröße`;
+
+            const fontSizeInput = document.createElement("input");
+            fontSizeInput.type = "number";
+            fontSizeInput.value = 16;
+            fontSizeInput.addEventListener("change", function () {
+                changeRowFontSize(rowIndex, this.value);
+            });
+
+            rowControls.appendChild(label);
+            rowControls.appendChild(fontSizeInput);
+            rowControlsContainer.appendChild(rowControls);
+        }
+
+        function changeRowFontSize(rowIndex, size) {
+            const table = document.getElementById("processTable");
+            const row = table.rows[rowIndex];
+            if (row) {
+                row.style.fontSize = size + "px";
+            }
+        }
+
+        // Ensure all cells in the header are editable
+        function makeHeaderEditable() {
+            const headerCells = document.querySelectorAll('#processTable thead th');
+            headerCells.forEach(cell => {
+                cell.contentEditable = "true";
+                cell.className = "editable";
+            });
+        }
+
+        // Add initial row controls
+        window.onload = function () {
+            makeHeaderEditable();
+            const table = document.getElementById('processTable').getElementsByTagName('tbody')[0];
+            for (let i = 1; i <= table.rows.length; i++) {
+                createRowControls(i);
+            }
+        };
+    </script>
+</body>
+</html>
